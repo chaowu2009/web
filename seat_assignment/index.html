@@ -1,8 +1,1144 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>test page</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Two-Week Seat Assignment Optimizer</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 24px;
+      background: #f7f7f9;
+      color: #222;
+    }
+
+    h1 {
+      margin-bottom: 6px;
+    }
+
+    h2,
+    h3 {
+      margin-top: 0;
+    }
+
+    .sub {
+      color: #555;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 18px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+
+    th,
+    td {
+      border: 1px solid #ccc;
+      padding: 7px;
+      text-align: center;
+    }
+
+    th {
+      background: #f0f2f5;
+    }
+
+    input[type="checkbox"] {
+      transform: scale(1.15);
+      cursor: pointer;
+    }
+
+    input[type="text"] {
+      width: 95%;
+      padding: 5px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 90px;
+      padding: 10px;
+      box-sizing: border-box;
+      font-family: Consolas, monospace;
+    }
+
+    button {
+      padding: 10px 16px;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-right: 8px;
+      margin-top: 8px;
+    }
+
+    .primary {
+      background: #2563eb;
+      color: white;
+    }
+
+    .secondary {
+      background: #e5e7eb;
+    }
+
+    .protected {
+      background: #e8f5e9;
+    }
+
+    .mobile {
+      background: #fff7cc;
+    }
+
+    .remote {
+      background: #e3f2fd;
+    }
+
+    .warn {
+      color: #b91c1c;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    .ok {
+      color: #166534;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    .note {
+      font-size: 13px;
+      color: #555;
+      margin-top: 6px;
+    }
+
+    .week-title {
+      font-weight: bold;
+    }
+
+    /* Distinguish Week A vs Week B */
+    .week-a {
+      background: linear-gradient(180deg, #fff7e6 0%, #fff3d7 100%);
+    }
+
+    .week-b {
+      background: linear-gradient(180deg, #e6f0ff 0%, #dbeafe 100%);
+    }
+
+    /* Day column styling: make Week A and Week B day columns wider and colored */
+    .dayA {
+      background: #fffaf0;
+      min-width: 96px;
+      width: 96px;
+    }
+
+    .dayB {
+      background: #f1f8ff;
+      min-width: 96px;
+      width: 96px;
+    }
+
+    /* Thick vertical separator between Week A and Week B */
+    .sep {
+      border-right: 4px solid #374151;
+    }
+
+    /* Alternating row backgrounds for readability (higher contrast) */
+    #scheduleTable tbody tr:nth-child(odd) td {
+      background: #ffffff;
+    }
+
+    /* stronger contrast on alternating rows */
+    #scheduleTable tbody tr:nth-child(even) td {
+      background: #e6f0ff;
+    }
+
+    /* subtle hover to aid scanning */
+    #scheduleTable tbody tr:hover td {
+      background: #fff8e6;
+    }
+
+    /* Ensure protected/mobile/remote rows still show their special color */
+    .protected td { background: #e8f5e9; }
+    .mobile td { background: #fff7cc; }
+    .remote td { background: #e3f2fd; }
+
+    /* Narrow flag/metadata columns */
+    .col-protected,
+    .col-mobile,
+    .col-remote,
+    .col-preferred {
+      min-width: 68px;
+      width: 68px;
+      white-space: nowrap;
+    }
+
+    .col-action {
+      min-width: 86px;
+      width: 86px;
+    }
+
+    .over {
+      background: #fee2e2;
+    }
+
+    .remote-name {
+      font-size: 12px;
+      color: #b91c1c;
+      margin-top: 4px;
+    }
+
+    .legend {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      font-size: 13px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-box {
+      width: 18px;
+      height: 18px;
+      border: 1px solid #bbb;
+    }
+
+    .legend-protected {
+      background: #e8f5e9;
+    }
+
+    .legend-mobile {
+      background: #fff7cc;
+    }
+
+    .legend-remote {
+      background: #e3f2fd;
+    }
+  </style>
 </head>
+
 <body>
-This is the test page.
+
+  <h1>Two-Week Seat Assignment Optimizer</h1>
+
+  <div class="sub">
+    Select onsite days for Week A and Week B. Protected, mobile,
+    remote-eligible, and preferred-seat fields directly control the assignment.
+  </div>
+
+  <div class="card">
+    <h3>1. Schedule and Assignment Rules</h3>
+
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+      <button class="secondary" onclick="addPerson()">Add</button>
+      <div class="note">Click Add to append a new person (editable name and defaults).</div>
+    </div>
+
+    <table id="scheduleTable">
+      <thead>
+        <tr>
+          <th rowspan="2">Name</th>
+
+          <th colspan="5" class="week-title week-a">Week A</th>
+          <th colspan="5" class="week-title week-b">Week B</th>
+
+          <th rowspan="2" class="col-protected">Protected Seat</th>
+          <th rowspan="2" class="col-mobile">Mobile</th>
+          <th rowspan="2" class="col-remote">Remote Eligible</th>
+          <th rowspan="2" class="col-preferred">Preferred Seat</th>
+          <th rowspan="2">Notes</th>
+          <th rowspan="2" class="col-action">Action</th>
+        </tr>
+
+        <tr>
+          <th class="dayA">Mon</th>
+          <th class="dayA">Tue</th>
+          <th class="dayA">Wed</th>
+          <th class="dayA">Thu</th>
+          <th class="dayA sep">Fri</th>
+
+          <th class="dayB">Mon</th>
+          <th class="dayB">Tue</th>
+          <th class="dayB">Wed</th>
+          <th class="dayB">Thu</th>
+          <th class="dayB sep">Fri</th>
+        </tr>
+      </thead>
+
+      <tbody></tbody>
+    </table>
+
+    <div class="legend">
+      <div class="legend-item">
+        <span class="legend-box legend-protected"></span>
+        Protected seat
+      </div>
+
+      <div class="legend-item">
+        <span class="legend-box legend-mobile"></span>
+        Mobile user
+      </div>
+
+      <div class="legend-item">
+        <span class="legend-box legend-remote"></span>
+        Remote eligible
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>2. Available Seats</h3>
+
+    <textarea id="seatList">3E-110
+3E-111
+3E-119
+3E-117
+3E-007
+3W-109</textarea>
+
+    <div class="note">
+      Enter one seat per line.
+    </div>
+  </div>
+
+  <div class="card">
+    <button class="primary" onclick="optimize()">
+      Generate Assignment
+    </button>
+
+    <button class="secondary" onclick="downloadCSV()">
+      Download CSV
+    </button>
+
+    <div id="message"></div>
+  </div>
+
+  <div class="card">
+    <h3>Capacity and Remote Recommendation</h3>
+    <div id="capacity"></div>
+  </div>
+
+  <div class="card">
+    <h3>Week A Seat Assignment</h3>
+    <div id="resultA"></div>
+  </div>
+
+  <div class="card">
+    <h3>Week B Seat Assignment</h3>
+    <div id="resultB"></div>
+  </div>
+
+  <script>
+    const days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+
+    let latestRows = [];
+
+    const peopleData = [
+      {
+        name: "Arbind",
+        a: [0, 1, 1, 0, 1],
+        b: [0, 1, 1, 0, 1],
+        protected: false,
+        mobile: false,
+        remote: false,
+        seat: "3E-111",
+        notes: ""
+      },
+      {
+        name: "Arsalan",
+        a: [0, 0, 0, 1, 1],
+        b: [0, 0, 0, 1, 1],
+        protected: false,
+        mobile: false,
+        remote: true,
+        seat: "3E-117",
+        notes: "Remote due to ankle rehab"
+      },
+      {
+        name: "Bin",
+        a: [1, 0, 1, 1, 0],
+        b: [0, 1, 0, 1, 1],
+        protected: false,
+        mobile: false,
+        remote: false,
+        seat: "3E-110",
+        notes: ""
+      },
+      {
+        name: "Gil",
+        a: [1, 1, 1, 0, 0],
+        b: [0, 0, 1, 1, 1],
+        protected: true,
+        mobile: false,
+        remote: false,
+        seat: "3E-119",
+        notes: "Protected seat"
+      },
+      {
+        name: "Fariborz",
+        a: [1, 1, 0, 0, 1],
+        b: [0, 1, 1, 0, 0],
+        protected: false,
+        mobile: false,
+        remote: false,
+        seat: "3E-111",
+        notes: ""
+      },
+      {
+        name: "James",
+        a: [1, 0, 0, 0, 0],
+        b: [1, 0, 0, 0, 0],
+        protected: false,
+        mobile: false,
+        remote: false,
+        seat: "3E-119",
+        notes: "Onsite on Mondays"
+      },
+      {
+        name: "John",
+        a: [0, 1, 1, 1, 0],
+        b: [0, 0, 1, 1, 1],
+        protected: true,
+        mobile: false,
+        remote: false,
+        seat: "3W-109",
+        notes: "Protected seat"
+      },
+      {
+        name: "Len",
+        a: [0, 0, 0, 0, 0],
+        b: [0, 0, 0, 0, 0],
+        protected: false,
+        mobile: true,
+        remote: false,
+        seat: "",
+        notes: "July TBD; 2 days/month"
+      },
+      {
+        name: "Narsimha",
+        a: [0, 1, 0, 0, 1],
+        b: [0, 0, 1, 0, 1],
+        protected: false,
+        mobile: false,
+        remote: false,
+        seat: "3E-007",
+        notes: ""
+      },
+      {
+        name: "Shah",
+        a: [0, 0, 1, 1, 0],
+        b: [0, 0, 1, 1, 0],
+        protected: false,
+        mobile: false,
+        remote: false,
+        seat: "3E-117",
+        notes: "Requested change to Tue, Wed, Thu"
+      },
+      {
+        name: "Rems",
+        a: [1, 0, 0, 1, 1],
+        b: [0, 1, 0, 1, 1],
+        protected: true,
+        mobile: false,
+        remote: false,
+        seat: "3E-007",
+        notes: "Protected seat"
+      },
+      {
+        name: "Chao",
+        a: [1, 0, 0, 1, 1],
+        b: [0, 1, 0, 1, 1],
+        protected: false,
+        mobile: false,
+        remote: true,
+        seat: "3E-110",
+        notes: ""
+      }
+    ];
+
+    function buildTable() {
+      const tbody = document.querySelector("#scheduleTable tbody");
+
+      tbody.innerHTML = "";
+
+      // Ensure every person has an internal id
+      peopleData.forEach(p => p.__id = p.__id || Math.random().toString(36).slice(2, 9));
+
+      // Render alphabetically for regular entries, but append any unsorted (new) entries
+      const regular = peopleData.filter(p => !p.__unsorted).slice();
+      const unsorted = peopleData.filter(p => p.__unsorted).slice();
+
+      regular.sort((a, b) => a.name.localeCompare(b.name));
+
+      const ordered = [...regular, ...unsorted];
+
+      ordered.forEach(person => {
+        const row = document.createElement("tr");
+
+        row.dataset.id = person.__id;
+
+        if (person.protected) {
+          row.classList.add("protected");
+        } else if (person.mobile) {
+          row.classList.add("mobile");
+        } else if (person.remote) {
+          row.classList.add("remote");
+        }
+
+        row.innerHTML = `
+          <td contenteditable="true" class="nameCell">${escapeHtml(person.name)}</td>
+
+          ${person.a.map((value, idx) => `
+            <td class="dayA ${idx === 4 ? 'sep' : ''}">
+              <input
+                type="checkbox"
+                class="wkA"
+                ${value ? "checked" : ""}
+              >
+            </td>
+          `).join("")}
+
+          ${person.b.map((value, idx) => `
+            <td class="dayB ${idx === 4 ? 'sep' : ''}">
+              <input
+                type="checkbox"
+                class="wkB"
+                ${value ? "checked" : ""}
+              >
+            </td>
+          `).join("")}
+
+          <td class="col-protected">
+            <input
+              type="checkbox"
+              class="protectedFlag"
+              ${person.protected ? "checked" : ""}
+            >
+          </td>
+
+          <td class="col-mobile">
+            <input
+              type="checkbox"
+              class="mobileFlag"
+              ${person.mobile ? "checked" : ""}
+            >
+          </td>
+
+          <td class="col-remote">
+            <input
+              type="checkbox"
+              class="remoteFlag"
+              ${person.remote ? "checked" : ""}
+            >
+          </td>
+
+          <td class="col-preferred">
+            <input
+              type="text"
+              class="seat"
+              value="${escapeHtml(person.seat)}"
+            >
+          </td>
+          <td>
+            <input
+              type="text"
+              class="notes"
+              value="${escapeHtml(person.notes)}"
+            >
+          </td>
+
+          <td class="col-action">
+            <button class="secondary" onclick="removePersonById('${person.__id}')">Remove</button>
+          </td>
+        `;
+
+        tbody.appendChild(row);
+      });
+    }
+
+    function addPerson() {
+      // Capture current edits into peopleData, preserving previous __unsorted flags when possible
+      const current = getPeople();
+      const prevFlags = new Map(peopleData.map(p => [p.__id, !!p.__unsorted]));
+      const prevIds = new Set(peopleData.map(p => p.__id));
+
+      peopleData.length = 0;
+      current.forEach(p => {
+        // carry forward id and unsorted flag when possible
+        if (!p.__id) p.__id = Math.random().toString(36).slice(2, 9);
+        p.__unsorted = !!prevFlags.get(p.__id);
+        peopleData.push(p);
+      });
+
+      // Generate a unique name
+      const base = 'New Person';
+      let i = 1;
+      const names = new Set(peopleData.map(p => p.name));
+      let name = base;
+      while (names.has(name)) {
+        name = `${base} ${i++}`;
+      }
+
+      const newId = Math.random().toString(36).slice(2, 9);
+
+      peopleData.push({
+        name,
+        a: [0, 0, 0, 0, 0],
+        b: [0, 0, 0, 0, 0],
+        protected: false,
+        mobile: false,
+        remote: false,
+        seat: "",
+        notes: ""
+        , __unsorted: true,
+        __id: newId
+      });
+
+      buildTable();
+
+      // Focus the newly-added row's name cell (find by name since sorting may reposition)
+      setTimeout(() => {
+        const rows = document.querySelectorAll('#scheduleTable tbody tr');
+        for (const row of rows) {
+          const nc = row.querySelector('.nameCell');
+          if (nc && nc.textContent.trim() === name) {
+            nc.focus();
+            break;
+          }
+        }
+      }, 0);
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function getPeople() {
+      const rows = [
+        ...document.querySelectorAll("#scheduleTable tbody tr")
+      ];
+
+      return rows.map(row => {
+        const cells = row.querySelectorAll("td");
+
+        return {
+          __id: row.dataset.id || undefined,
+          name: row.querySelector('.nameCell')?.textContent.trim() || cells[0].textContent.trim(),
+
+          a: [...row.querySelectorAll(".wkA")]
+            .map(checkbox => checkbox.checked),
+
+          b: [...row.querySelectorAll(".wkB")]
+            .map(checkbox => checkbox.checked),
+
+          protected: row.querySelector(".protectedFlag").checked,
+
+          mobile: row.querySelector(".mobileFlag").checked,
+
+          remote: row.querySelector(".remoteFlag").checked,
+
+          seat: row.querySelector(".seat").value.trim(),
+
+          notes: row.querySelector(".notes").value.trim()
+        };
+      });
+    }
+
+    function removePersonById(id) {
+      // capture current edits
+      const current = getPeople();
+
+      // rebuild peopleData preserving ids and flags
+      const prevFlags = new Map(peopleData.map(p => [p.__id, !!p.__unsorted]));
+      peopleData.length = 0;
+      current.forEach(p => {
+        p.__id = p.__id || Math.random().toString(36).slice(2, 9);
+        p.__unsorted = !!prevFlags.get(p.__id);
+        peopleData.push(p);
+      });
+
+      // remove the matching id
+      const idx = peopleData.findIndex(p => p.__id === id);
+      if (idx >= 0) {
+        peopleData.splice(idx, 1);
+      }
+
+      buildTable();
+    }
+
+    function getSeats() {
+      return document
+        .getElementById("seatList")
+        .value
+        .split(/\r?\n/)
+        .map(seat => seat.trim())
+        .filter(Boolean);
+    }
+
+    function recommendRemote(workingPeople, overflowCount) {
+      if (overflowCount <= 0) {
+        return [];
+      }
+
+      const ranked = [...workingPeople].sort((personA, personB) => {
+        return remoteScore(personA) - remoteScore(personB);
+      });
+
+      return ranked
+        .slice(0, overflowCount)
+        .map(person => person.name);
+    }
+
+    function remoteScore(person) {
+      if (person.mobile) {
+        return 0;
+      }
+
+      if (person.remote) {
+        return 1;
+      }
+
+      if (!person.protected) {
+        return 2;
+      }
+
+      return 3;
+    }
+
+    function optimizeWeek(people, weekKey, seats) {
+      const assignment = {};
+
+      people.forEach(person => {
+        assignment[person.name] = Array(5).fill("");
+      });
+
+      for (let dayIndex = 0; dayIndex < 5; dayIndex++) {
+        const workingPeople = people.filter(person => {
+          return person[weekKey][dayIndex];
+        });
+
+        const overflowCount = Math.max(
+          0,
+          workingPeople.length - seats.length
+        );
+
+        const remoteNames = recommendRemote(
+          workingPeople,
+          overflowCount
+        );
+
+        const onsitePeople = workingPeople.filter(person => {
+          return !remoteNames.includes(person.name);
+        });
+
+        const openSeats = new Set(seats);
+
+        assignProtectedPeople(
+          onsitePeople,
+          assignment,
+          dayIndex,
+          openSeats
+        );
+
+        assignPreferredPeople(
+          onsitePeople,
+          assignment,
+          dayIndex,
+          openSeats
+        );
+
+        assignRemainingNonMobilePeople(
+          onsitePeople,
+          assignment,
+          dayIndex,
+          openSeats
+        );
+
+        assignMobilePeople(
+          onsitePeople,
+          assignment,
+          dayIndex,
+          openSeats
+        );
+      }
+
+      return assignment;
+    }
+
+    function assignProtectedPeople(
+      onsitePeople,
+      assignment,
+      dayIndex,
+      openSeats
+    ) {
+      const protectedPeople = onsitePeople.filter(person => {
+        return person.protected;
+      });
+
+      protectedPeople.forEach(person => {
+        if (
+          person.seat &&
+          openSeats.has(person.seat)
+        ) {
+          assignment[person.name][dayIndex] = person.seat;
+          openSeats.delete(person.seat);
+        }
+      });
+    }
+
+    function assignPreferredPeople(
+      onsitePeople,
+      assignment,
+      dayIndex,
+      openSeats
+    ) {
+      const preferredPeople = onsitePeople.filter(person => {
+        return !person.protected && !person.mobile;
+      });
+
+      preferredPeople.forEach(person => {
+        if (
+          person.seat &&
+          openSeats.has(person.seat)
+        ) {
+          assignment[person.name][dayIndex] = person.seat;
+          openSeats.delete(person.seat);
+        }
+      });
+    }
+
+    function assignRemainingNonMobilePeople(
+      onsitePeople,
+      assignment,
+      dayIndex,
+      openSeats
+    ) {
+      const nonMobilePeople = onsitePeople.filter(person => {
+        return !person.mobile;
+      });
+
+      nonMobilePeople.forEach(person => {
+        if (assignment[person.name][dayIndex]) {
+          return;
+        }
+
+        const bestSeat = findBestAvailableSeat(
+          assignment[person.name],
+          dayIndex,
+          openSeats
+        );
+
+        if (bestSeat) {
+          assignment[person.name][dayIndex] = bestSeat;
+          openSeats.delete(bestSeat);
+        }
+      });
+    }
+
+    function findBestAvailableSeat(
+      personAssignments,
+      dayIndex,
+      openSeats
+    ) {
+      const priorSeats = personAssignments
+        .slice(0, dayIndex)
+        .filter(Boolean);
+
+      const counts = {};
+
+      priorSeats.forEach(seat => {
+        counts[seat] = (counts[seat] || 0) + 1;
+      });
+
+      const availableSeats = [...openSeats];
+
+      availableSeats.sort((seatA, seatB) => {
+        return (counts[seatB] || 0) - (counts[seatA] || 0);
+      });
+
+      return availableSeats[0] || "";
+    }
+
+    function assignMobilePeople(
+      onsitePeople,
+      assignment,
+      dayIndex,
+      openSeats
+    ) {
+      const mobilePeople = onsitePeople.filter(person => {
+        return person.mobile;
+      });
+
+      mobilePeople.forEach(person => {
+        const availableSeat = [...openSeats][0];
+
+        if (availableSeat) {
+          assignment[person.name][dayIndex] = availableSeat;
+          openSeats.delete(availableSeat);
+        }
+      });
+    }
+
+    function optimize() {
+      latestRows = [];
+
+      const people = getPeople();
+      const seats = getSeats();
+
+      if (!seats.length) {
+        showMessage(
+          "Please enter at least one available seat.",
+          true
+        );
+
+        return;
+      }
+
+      const weekAAssignment = optimizeWeek(
+        people,
+        "a",
+        seats
+      );
+
+      const weekBAssignment = optimizeWeek(
+        people,
+        "b",
+        seats
+      );
+
+      renderCapacity(
+        people,
+        seats.length
+      );
+
+      renderWeek(
+        "resultA",
+        seats,
+        people,
+        weekAAssignment,
+        "Week A"
+      );
+
+      renderWeek(
+        "resultB",
+        seats,
+        people,
+        weekBAssignment,
+        "Week B"
+      );
+
+      showMessage(
+        "Assignment generated successfully.",
+        false
+      );
+    }
+
+    function renderCapacity(people, seatCount) {
+      let html = `
+        <table>
+          <thead>
+            <tr> 
+                  <th>Week</th>
+                  ${days.map((day, idx) => `<th class="${idx < 5 ? 'dayA' : 'dayB'}">${day}</th>`).join("")}
+                </tr>
+          </thead>
+          <tbody>
+      `;
+
+      ["a", "b"].forEach((weekKey, weekIndex) => {
+        const weekName = weekIndex === 0
+          ? "Week A"
+          : "Week B";
+
+        html += `<tr><td>${weekName}</td>`;
+
+        days.forEach((day, dayIndex) => {
+          const workingPeople = people.filter(person => {
+            return person[weekKey][dayIndex];
+          });
+
+          const overflowCount = Math.max(
+            0,
+            workingPeople.length - seatCount
+          );
+
+          const remoteNames = recommendRemote(
+            workingPeople,
+            overflowCount
+          );
+
+          const remoteText = remoteNames.length
+            ? `
+              <div class="remote-name">
+                Suggested remote:
+                ${remoteNames.join(", ")}
+              </div>
+            `
+            : "";
+
+          html += `
+            <td class="${overflowCount ? "over" : ""} ${dayIndex < 5 ? 'dayA' : 'dayB'}">
+              ${workingPeople.length} / ${seatCount}
+              ${remoteText}
+            </td>
+          `;
+        });
+
+        html += "</tr>";
+      });
+
+      html += `
+          </tbody>
+        </table>
+      `;
+
+      document.getElementById("capacity").innerHTML = html;
+    }
+
+    function renderWeek(
+      targetId,
+      seats,
+      people,
+      assignment,
+      label
+    ) {
+      const seatTable = {};
+
+      seats.forEach(seat => {
+        seatTable[seat] = Array(5).fill("");
+      });
+
+      people.forEach(person => {
+        days.forEach((day, dayIndex) => {
+          const assignedSeat = assignment[person.name][dayIndex];
+
+          if (assignedSeat) {
+            seatTable[assignedSeat][dayIndex] = person.name;
+          }
+        });
+      });
+
+      const isWeekA = label === 'Week A';
+      const dayClass = isWeekA ? 'dayA' : 'dayB';
+
+      let html = `
+        <table>
+          <thead>
+            <tr>
+              <th>Seat</th>
+              ${days.map((day, idx) => `<th class="${dayClass} ${isWeekA && idx === 4 ? 'sep' : ''}">${day}</th>`).join("")}
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      seats.forEach(seat => {
+        html += `
+          <tr>
+            <td>${seat}</td>
+            ${seatTable[seat]
+              .map((personName, idx) => `<td class="${dayClass} ${isWeekA && idx === 4 ? 'sep' : ''}">${personName}</td>`)
+              .join("")}
+          </tr>
+        `;
+      });
+
+      html += `
+          </tbody>
+        </table>
+      `;
+
+      document.getElementById(targetId).innerHTML = html;
+
+      latestRows.push([label]);
+      latestRows.push(["Seat", ...days]);
+
+      seats.forEach(seat => {
+        latestRows.push([
+          seat,
+          ...seatTable[seat]
+        ]);
+      });
+
+      latestRows.push([]);
+    }
+
+    function downloadCSV() {
+      if (!latestRows.length) {
+        showMessage(
+          "Generate an assignment before downloading.",
+          true
+        );
+
+        return;
+      }
+
+      const csv = latestRows
+        .map(row => {
+          return row
+            .map(value => {
+              const safeValue = String(value ?? "")
+                .replace(/"/g, '""');
+
+              return `"${safeValue}"`;
+            })
+            .join(",");
+        })
+        .join("\n");
+
+      const blob = new Blob(
+        [csv],
+        {
+          type: "text/csv;charset=utf-8;"
+        }
+      );
+
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = "two_week_seat_assignment.csv";
+
+      document.body.appendChild(link);
+
+      link.click();
+      link.remove();
+
+      URL.revokeObjectURL(url);
+    }
+
+    function showMessage(message, isError) {
+      const messageElement = document.getElementById("message");
+
+      messageElement.className = isError
+        ? "warn"
+        : "ok";
+
+      messageElement.textContent = message;
+    }
+
+    buildTable();
+  </script>
+
 </body>
 </html>
