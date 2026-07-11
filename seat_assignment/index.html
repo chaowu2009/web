@@ -65,6 +65,52 @@
       box-sizing: border-box;
     }
 
+    .seat-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #2563eb;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .seat-badge button {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 0;
+      line-height: 1;
+      margin: 0;
+    }
+
+    .seat-badge button:hover {
+      opacity: 0.8;
+    }
+
+    select {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .holiday {
+      background: #f0f0f0 !important;
+      opacity: 0.5;
+      color: #999;
+    }
+
+    .holiday input[type="checkbox"] {
+      opacity: 0.3;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
     textarea {
       width: 100%;
       min-height: 90px;
@@ -242,6 +288,23 @@
   </div>
 
   <div class="card">
+    <h3>📅 Schedule Period</h3>
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+      <label for="firstDayInput" style="font-weight:600; white-space:nowrap;">The day of Monday:</label>
+      <input
+        type="date"
+        id="firstDayInput"
+        style="padding:8px; border:1px solid #ccc; border-radius:4px; font-size:14px;"
+      >
+      <div class="note" style="margin:0;">This will appear in your reports and downloads.</div>
+    </div>
+    <div id="holidaysList" style="margin-top:12px; padding:12px; background:#fffacd; border-left:4px solid #ffd700; border-radius:4px; display:none;">
+      <div style="font-weight:600; color:#333; margin-bottom:6px;">🎉 Federal Holidays in This Period:</div>
+      <div id="holidaysText" style="color:#555; font-size:14px;"></div>
+    </div>
+  </div>
+
+  <div class="card">
     <h3>1. Schedule and Assignment Rules</h3>
 
     <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
@@ -258,7 +321,6 @@
           <th colspan="5" class="week-title week-b">Week B</th>
 
           <th rowspan="2" class="col-protected">Protected Seat</th>
-          <th rowspan="2" class="col-mobile">Mobile</th>
           <th rowspan="2" class="col-remote">Remote Eligible</th>
           <th rowspan="2" class="col-preferred">Preferred Seat</th>
           <th rowspan="2">Notes</th>
@@ -290,11 +352,6 @@
       </div>
 
       <div class="legend-item">
-        <span class="legend-box legend-mobile"></span>
-        Mobile user
-      </div>
-
-      <div class="legend-item">
         <span class="legend-box legend-remote"></span>
         Remote eligible
       </div>
@@ -304,15 +361,38 @@
   <div class="card">
     <h3>2. Available Seats</h3>
 
-    <textarea id="seatList">3E-110
+    <div style="display:flex; gap:12px; align-items:flex-end; margin-bottom:12px;">
+      <div style="flex:1;">
+        <label for="newSeatInput" style="display:block; margin-bottom:6px; font-weight:600;">Add New Seat:</label>
+        <input
+          type="text"
+          id="newSeatInput"
+          placeholder="Enter seat (e.g., 3E-120)"
+          style="width:100%; padding:8px; box-sizing:border-box;"
+        >
+      </div>
+      <button class="secondary" onclick="addNewSeat()">Add Seat</button>
+    </div>
+
+    <div style="margin-bottom:12px;">
+      <label for="seatDropdown" style="display:block; margin-bottom:6px; font-weight:600;">Available Seats:</label>
+      <select id="seatDropdown" style="width:100%; padding:8px; box-sizing:border-box; font-size:14px;">
+        <option value="">-- Select a seat --</option>
+      </select>
+    </div>
+
+    <div style="margin-bottom:12px;">
+      <div id="seatList" style="display:flex; flex-wrap:wrap; gap:8px; padding:12px; background:#f9f9f9; border-radius:6px; min-height:40px;"></div>
+      <textarea id="seatListHidden" style="display:none;">3E-110
 3E-111
 3E-119
 3E-117
 3E-007
 3W-109</textarea>
+    </div>
 
     <div class="note">
-      Enter one seat per line.
+      Add new seats or select from the dropdown. Click the ✕ button to remove a seat.
     </div>
   </div>
 
@@ -347,6 +427,130 @@
     const days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
 
     let latestRows = [];
+
+    // Check if a date is a US federal holiday (including observed dates)
+    function isUSFederalHoliday(date) {
+      const month = date.getMonth();
+      const dayOfMonth = date.getDate();
+      const dayOfWeek = date.getDay(); // 0=Sun, 1=Mon, 5=Fri, 6=Sat
+      const year = date.getFullYear();
+
+      // New Year's Day (Jan 1) and observed
+      if (month === 0) {
+        if (dayOfMonth === 1) return true; // Jan 1
+        if (dayOfMonth === 2 && dayOfWeek === 1) return true; // Observed on Mon if Jan 1 is Sun
+      }
+
+      // Independence Day (Jul 4) and observed
+      if (month === 6) {
+        if (dayOfMonth === 4) return true; // Jul 4
+        if (dayOfMonth === 3 && dayOfWeek === 5) return true; // Observed on Fri if Jul 4 is Sat
+        if (dayOfMonth === 5 && dayOfWeek === 1) return true; // Observed on Mon if Jul 4 is Sun
+      }
+
+      // Veterans Day (Nov 11) and observed
+      if (month === 10) {
+        if (dayOfMonth === 11) return true; // Nov 11
+        if (dayOfMonth === 10 && dayOfWeek === 5) return true; // Observed on Fri if Nov 11 is Sat
+        if (dayOfMonth === 12 && dayOfWeek === 1) return true; // Observed on Mon if Nov 11 is Sun
+      }
+
+      // Christmas (Dec 25) and observed
+      if (month === 11) {
+        if (dayOfMonth === 25) return true; // Dec 25
+        if (dayOfMonth === 24 && dayOfWeek === 5) return true; // Observed on Fri if Dec 25 is Sat
+        if (dayOfMonth === 26 && dayOfWeek === 1) return true; // Observed on Mon if Dec 25 is Sun
+      }
+
+      // MLK Jr. Day (3rd Monday in January)
+      if (month === 0 && dayOfWeek === 1 && dayOfMonth >= 15 && dayOfMonth <= 21) return true;
+
+      // Presidents' Day (3rd Monday in February)
+      if (month === 1 && dayOfWeek === 1 && dayOfMonth >= 15 && dayOfMonth <= 21) return true;
+
+      // Memorial Day (last Monday in May)
+      if (month === 4 && dayOfWeek === 1 && dayOfMonth >= 25) return true;
+
+      // Labor Day (1st Monday in September)
+      if (month === 8 && dayOfWeek === 1 && dayOfMonth <= 7) return true;
+
+      // Columbus Day (2nd Monday in October)
+      if (month === 9 && dayOfWeek === 1 && dayOfMonth >= 8 && dayOfMonth <= 14) return true;
+
+      // Thanksgiving (4th Thursday in November)
+      if (month === 10 && dayOfWeek === 4 && dayOfMonth >= 22 && dayOfMonth <= 28) return true;
+
+      return false;
+    }
+
+    // Get holiday name for a given date
+    function getHolidayName(date) {
+      const month = date.getMonth();
+      const dayOfMonth = date.getDate();
+      const dayOfWeek = date.getDay();
+
+      // New Year's Day
+      if (month === 0 && dayOfMonth === 1) return "New Year's Day";
+      if (month === 0 && dayOfMonth === 2 && dayOfWeek === 1) return "New Year's Day (Observed)";
+
+      // MLK Jr. Day
+      if (month === 0 && dayOfWeek === 1 && dayOfMonth >= 15 && dayOfMonth <= 21) return "MLK Jr. Day";
+
+      // Presidents' Day
+      if (month === 1 && dayOfWeek === 1 && dayOfMonth >= 15 && dayOfMonth <= 21) return "Presidents' Day";
+
+      // Memorial Day
+      if (month === 4 && dayOfWeek === 1 && dayOfMonth >= 25) return "Memorial Day";
+
+      // Independence Day
+      if (month === 6 && dayOfMonth === 4) return "Independence Day";
+      if (month === 6 && dayOfMonth === 3 && dayOfWeek === 5) return "Independence Day (Observed)";
+      if (month === 6 && dayOfMonth === 5 && dayOfWeek === 1) return "Independence Day (Observed)";
+
+      // Labor Day
+      if (month === 8 && dayOfWeek === 1 && dayOfMonth <= 7) return "Labor Day";
+
+      // Columbus Day
+      if (month === 9 && dayOfWeek === 1 && dayOfMonth >= 8 && dayOfMonth <= 14) return "Columbus Day";
+
+      // Veterans Day
+      if (month === 10 && dayOfMonth === 11) return "Veterans Day";
+      if (month === 10 && dayOfMonth === 10 && dayOfWeek === 5) return "Veterans Day (Observed)";
+      if (month === 10 && dayOfMonth === 12 && dayOfWeek === 1) return "Veterans Day (Observed)";
+
+      // Thanksgiving
+      if (month === 10 && dayOfWeek === 4 && dayOfMonth >= 22 && dayOfMonth <= 28) return "Thanksgiving";
+
+      // Christmas
+      if (month === 11 && dayOfMonth === 25) return "Christmas";
+      if (month === 11 && dayOfMonth === 24 && dayOfWeek === 5) return "Christmas (Observed)";
+      if (month === 11 && dayOfMonth === 26 && dayOfWeek === 1) return "Christmas (Observed)";
+
+      return null;
+    }
+
+    // Get all holidays in a two-week period
+    function getHolidaysInPeriod(firstDayStr) {
+      const holidays = [];
+      if (!firstDayStr) return holidays;
+
+      const [year, month, day] = firstDayStr.split('-');
+      const firstDay = new Date(year, month - 1, day);
+
+      // Check 14 days (2 weeks)
+      for (let i = 0; i < 14; i++) {
+        const checkDate = new Date(firstDay);
+        checkDate.setDate(firstDay.getDate() + i);
+        const holidayName = getHolidayName(checkDate);
+
+        if (holidayName) {
+          const dateStr = checkDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          holidays.push(`${holidayName} (${dateStr})`);
+        }
+      }
+
+      return holidays;
+    }
 
     const peopleData = [
       {
@@ -424,7 +628,7 @@
         a: [0, 0, 0, 0, 0],
         b: [0, 0, 0, 0, 0],
         protected: false,
-        mobile: true,
+        mobile: false,
         remote: false,
         seat: "",
         notes: "July TBD; 2 days/month"
@@ -476,6 +680,30 @@
 
       tbody.innerHTML = "";
 
+      // Get first day and calculate holiday status for each day
+      const firstDayInput = document.getElementById("firstDayInput").value;
+      let weekAHolidays = [false, false, false, false, false];
+      let weekBHolidays = [false, false, false, false, false];
+
+      if (firstDayInput) {
+        const [year, month, day] = firstDayInput.split('-');
+        const firstDay = new Date(year, month - 1, day);
+
+        // Check Week A days (Mon-Fri)
+        for (let i = 0; i < 5; i++) {
+          const checkDate = new Date(firstDay);
+          checkDate.setDate(firstDay.getDate() + i);
+          weekAHolidays[i] = isUSFederalHoliday(checkDate);
+        }
+
+        // Check Week B days (Mon-Fri, 7 days later)
+        for (let i = 0; i < 5; i++) {
+          const checkDate = new Date(firstDay);
+          checkDate.setDate(firstDay.getDate() + 7 + i);
+          weekBHolidays[i] = isUSFederalHoliday(checkDate);
+        }
+      }
+
       // Ensure every person has an internal id
       peopleData.forEach(p => p.__id = p.__id || Math.random().toString(36).slice(2, 9));
 
@@ -494,8 +722,6 @@
 
         if (person.protected) {
           row.classList.add("protected");
-        } else if (person.mobile) {
-          row.classList.add("mobile");
         } else if (person.remote) {
           row.classList.add("remote");
         }
@@ -504,21 +730,23 @@
           <td contenteditable="true" class="nameCell">${escapeHtml(person.name)}</td>
 
           ${person.a.map((value, idx) => `
-            <td class="dayA ${idx === 4 ? 'sep' : ''}">
+            <td class="dayA ${idx === 4 ? 'sep' : ''} ${weekAHolidays[idx] ? 'holiday' : ''}" ${weekAHolidays[idx] ? 'title="Federal holiday"' : ''}>
               <input
                 type="checkbox"
                 class="wkA"
                 ${value ? "checked" : ""}
+                ${weekAHolidays[idx] ? "disabled" : ""}
               >
             </td>
           `).join("")}
 
           ${person.b.map((value, idx) => `
-            <td class="dayB ${idx === 4 ? 'sep' : ''}">
+            <td class="dayB ${idx === 4 ? 'sep' : ''} ${weekBHolidays[idx] ? 'holiday' : ''}" ${weekBHolidays[idx] ? 'title="Federal holiday"' : ''}>
               <input
                 type="checkbox"
                 class="wkB"
                 ${value ? "checked" : ""}
+                ${weekBHolidays[idx] ? "disabled" : ""}
               >
             </td>
           `).join("")}
@@ -528,14 +756,6 @@
               type="checkbox"
               class="protectedFlag"
               ${person.protected ? "checked" : ""}
-            >
-          </td>
-
-          <td class="col-mobile">
-            <input
-              type="checkbox"
-              class="mobileFlag"
-              ${person.mobile ? "checked" : ""}
             >
           </td>
 
@@ -652,7 +872,7 @@
 
           protected: row.querySelector(".protectedFlag").checked,
 
-          mobile: row.querySelector(".mobileFlag").checked,
+          mobile: false,
 
           remote: row.querySelector(".remoteFlag").checked,
 
@@ -687,11 +907,58 @@
 
     function getSeats() {
       return document
-        .getElementById("seatList")
+        .getElementById("seatListHidden")
         .value
         .split(/\r?\n/)
         .map(seat => seat.trim())
         .filter(Boolean);
+    }
+
+    function renderSeats() {
+      const seats = getSeats();
+      const container = document.getElementById("seatList");
+      const dropdown = document.getElementById("seatDropdown");
+
+      container.innerHTML = seats.map(seat => `
+        <div class="seat-badge">
+          <span>${escapeHtml(seat)}</span>
+          <button onclick="removeSeat('${seat}')" title="Remove seat">✕</button>
+        </div>
+      `).join("");
+
+      dropdown.innerHTML = '<option value="">-- Select a seat --</option>' + seats.map(seat => `
+        <option value="${escapeHtml(seat)}">${escapeHtml(seat)}</option>
+      `).join("");
+    }
+
+    function addNewSeat() {
+      const input = document.getElementById("newSeatInput");
+      const seat = input.value.trim().toUpperCase();
+
+      if (!seat) {
+        showMessage("Please enter a seat number.", true);
+        return;
+      }
+
+      const seats = getSeats();
+      if (seats.includes(seat)) {
+        showMessage("This seat already exists.", true);
+        return;
+      }
+
+      seats.push(seat);
+      document.getElementById("seatListHidden").value = seats.join("\n");
+
+      input.value = "";
+      renderSeats();
+      showMessage(`Seat ${seat} added successfully.`, false);
+    }
+
+    function removeSeat(seat) {
+      const seats = getSeats().filter(s => s !== seat);
+      document.getElementById("seatListHidden").value = seats.join("\n");
+      renderSeats();
+      showMessage(`Seat ${seat} removed.`, false);
     }
 
     function recommendRemote(workingPeople, overflowCount) {
@@ -724,7 +991,7 @@
       return 3;
     }
 
-    function optimizeWeek(people, weekKey, seats) {
+    function optimizeWeek(people, weekKey, seats, holidays = [false, false, false, false, false]) {
       const assignment = {};
 
       people.forEach(person => {
@@ -732,6 +999,11 @@
       });
 
       for (let dayIndex = 0; dayIndex < 5; dayIndex++) {
+        // Skip holiday days - no assignments made
+        if (holidays[dayIndex]) {
+          continue;
+        }
+
         const workingPeople = people.filter(person => {
           return person[weekKey][dayIndex];
         });
@@ -903,6 +1175,7 @@
 
       const people = getPeople();
       const seats = getSeats();
+      const firstDay = document.getElementById("firstDayInput").value;
 
       if (!seats.length) {
         showMessage(
@@ -913,29 +1186,79 @@
         return;
       }
 
+      // Calculate holiday status for each week
+      let weekAHolidays = [false, false, false, false, false];
+      let weekBHolidays = [false, false, false, false, false];
+
+      if (firstDay) {
+        const [year, month, day] = firstDay.split('-');
+        const firstDayObj = new Date(year, month - 1, day);
+
+        // Check Week A days
+        for (let i = 0; i < 5; i++) {
+          const checkDate = new Date(firstDayObj);
+          checkDate.setDate(firstDayObj.getDate() + i);
+          weekAHolidays[i] = isUSFederalHoliday(checkDate);
+        }
+
+        // Check Week B days
+        for (let i = 0; i < 5; i++) {
+          const checkDate = new Date(firstDayObj);
+          checkDate.setDate(firstDayObj.getDate() + 7 + i);
+          weekBHolidays[i] = isUSFederalHoliday(checkDate);
+        }
+      }
+
+      // Display holidays in the Schedule Period section
+      const holidaysList = getHolidaysInPeriod(firstDay);
+      const holidaysDiv = document.getElementById("holidaysList");
+      const holidaysText = document.getElementById("holidaysText");
+
+      if (holidaysList.length > 0) {
+        holidaysText.innerHTML = holidaysList.map(h => `<div style="margin:4px 0;">• ${h}</div>`).join("");
+        holidaysDiv.style.display = "block";
+      } else {
+        holidaysDiv.style.display = "none";
+      }
+
       const weekAAssignment = optimizeWeek(
         people,
         "a",
-        seats
+        seats,
+        weekAHolidays
       );
 
       const weekBAssignment = optimizeWeek(
         people,
         "b",
-        seats
+        seats,
+        weekBHolidays
       );
 
       renderCapacity(
         people,
-        seats.length
+        seats.length,
+        weekAHolidays,
+        weekBHolidays
       );
+
+      // Calculate Week B date (one week after Week A)
+      let secondDay = "";
+      if (firstDay) {
+        const weekADate = new Date(firstDay);
+        const weekBDate = new Date(weekADate);
+        weekBDate.setDate(weekADate.getDate() + 7);
+        secondDay = weekBDate.toISOString().split('T')[0];
+      }
 
       renderWeek(
         "resultA",
         seats,
         people,
         weekAAssignment,
-        "Week A"
+        "Week A",
+        firstDay,
+        weekAHolidays
       );
 
       renderWeek(
@@ -943,8 +1266,25 @@
         seats,
         people,
         weekBAssignment,
-        "Week B"
+        "Week B",
+        secondDay,
+        weekBHolidays
       );
+
+      // Prepend schedule period info to CSV
+      if (firstDay) {
+        const [year1, month1, day1] = firstDay.split('-');
+        const dateObj1 = new Date(year1, month1 - 1, day1);
+        const firstDayStr = dateObj1.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+
+        const [year2, month2, day2] = secondDay.split('-');
+        const dateObj2 = new Date(year2, month2 - 1, day2);
+        const secondDayStr = dateObj2.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+
+        latestRows.unshift(["Week B - The day of Monday:", secondDayStr]);
+        latestRows.unshift(["Week A - The day of Monday:", firstDayStr]);
+        latestRows.unshift([]);
+      }
 
       showMessage(
         "Assignment generated successfully.",
@@ -952,13 +1292,18 @@
       );
     }
 
-    function renderCapacity(people, seatCount) {
+    function renderCapacity(people, seatCount, weekAHolidays = [], weekBHolidays = []) {
       let html = `
         <table>
           <thead>
-            <tr> 
-                  <th>Week</th>
-                  ${days.map((day, idx) => `<th class="${idx < 5 ? 'dayA' : 'dayB'}">${day}</th>`).join("")}
+            <tr>
+                  <th style="width: 55px; min-width: 55px; padding: 5px;">Week</th>
+                  ${days.map((day, idx) => {
+                    const isWeekAHoliday = weekAHolidays[idx];
+                    const isWeekBHoliday = weekBHolidays[idx];
+                    const headerText = (isWeekAHoliday || isWeekBHoliday) ? 'Federal holiday' : day;
+                    return `<th class="${idx < 5 ? 'dayA' : 'dayB'} ${isWeekAHoliday || isWeekBHoliday ? 'holiday' : ''}" title="${isWeekAHoliday || isWeekBHoliday ? 'Federal holiday' : ''}">${headerText}</th>`;
+                  }).join("")}
                 </tr>
           </thead>
           <tbody>
@@ -968,8 +1313,9 @@
         const weekName = weekIndex === 0
           ? "Week A"
           : "Week B";
+        const holidays = weekIndex === 0 ? weekAHolidays : weekBHolidays;
 
-        html += `<tr><td>${weekName}</td>`;
+        html += `<tr><td style="width: 55px; min-width: 55px; padding: 5px;">${weekName}</td>`;
 
         days.forEach((day, dayIndex) => {
           const workingPeople = people.filter(person => {
@@ -996,7 +1342,7 @@
             : "";
 
           html += `
-            <td class="${overflowCount ? "over" : ""} ${dayIndex < 5 ? 'dayA' : 'dayB'}">
+            <td class="${overflowCount ? "over" : ""} ${dayIndex < 5 ? 'dayA' : 'dayB'} ${holidays[dayIndex] ? 'holiday' : ''}" ${holidays[dayIndex] ? 'title="Federal holiday"' : ''}>
               ${workingPeople.length} / ${seatCount}
               ${remoteText}
             </td>
@@ -1019,7 +1365,9 @@
       seats,
       people,
       assignment,
-      label
+      label,
+      firstDay,
+      holidays = [false, false, false, false, false]
     ) {
       const seatTable = {};
 
@@ -1040,12 +1388,25 @@
       const isWeekA = label === 'Week A';
       const dayClass = isWeekA ? 'dayA' : 'dayB';
 
+      let firstDayStr = '';
+      if (firstDay) {
+        const [year, month, day] = firstDay.split('-');
+        const dateObj = new Date(year, month - 1, day);
+        firstDayStr = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+      }
+      const weekTitle = firstDayStr ? `${label} (${firstDayStr})` : label;
+
       let html = `
+        <div style="margin-bottom: 12px; font-size: 14px; color: #666; font-weight: 500;">📅 ${escapeHtml(weekTitle)}</div>
         <table>
           <thead>
             <tr>
-              <th>Seat</th>
-              ${days.map((day, idx) => `<th class="${dayClass} ${isWeekA && idx === 4 ? 'sep' : ''}">${day}</th>`).join("")}
+              <th style="width: 65px; min-width: 65px; padding: 5px;">Seat</th>
+              ${days.map((day, idx) => {
+                const isHoliday = holidays[idx];
+                const headerText = isHoliday ? 'Federal holiday' : day;
+                return `<th class="${dayClass} ${isWeekA && idx === 4 ? 'sep' : ''} ${isHoliday ? 'holiday' : ''}" title="${isHoliday ? 'Federal holiday' : ''}">${headerText}</th>`;
+              }).join("")}
             </tr>
           </thead>
           <tbody>
@@ -1054,9 +1415,9 @@
       seats.forEach(seat => {
         html += `
           <tr>
-            <td>${seat}</td>
+            <td style="width: 65px; min-width: 65px; padding: 5px;">${seat}</td>
             ${seatTable[seat]
-              .map((personName, idx) => `<td class="${dayClass} ${isWeekA && idx === 4 ? 'sep' : ''}">${personName}</td>`)
+              .map((personName, idx) => `<td class="${dayClass} ${isWeekA && idx === 4 ? 'sep' : ''} ${holidays[idx] ? 'holiday' : ''}" ${holidays[idx] ? 'title="Federal holiday"' : ''}>${personName}</td>`)
               .join("")}
           </tr>
         `;
@@ -1069,7 +1430,7 @@
 
       document.getElementById(targetId).innerHTML = html;
 
-      latestRows.push([label]);
+      latestRows.push([weekTitle]);
       latestRows.push(["Seat", ...days]);
 
       seats.forEach(seat => {
@@ -1138,6 +1499,44 @@
     }
 
     buildTable();
+    renderSeats();
+
+    // Set default first day to this week's Monday
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const daysToMonday = (dayOfWeek === 0) ? -6 : (1 - dayOfWeek);
+    const thisMonday = new Date(today);
+    thisMonday.setDate(today.getDate() + daysToMonday);
+    const dateString = thisMonday.toISOString().split('T')[0];
+    document.getElementById("firstDayInput").value = dateString;
+
+    // Function to update holidays display
+    function updateHolidaysDisplay() {
+      const firstDayInput = document.getElementById("firstDayInput").value;
+      const holidaysList = getHolidaysInPeriod(firstDayInput);
+      const holidaysDiv = document.getElementById("holidaysList");
+      const holidaysText = document.getElementById("holidaysText");
+
+      if (holidaysList.length > 0) {
+        holidaysText.innerHTML = holidaysList.map(h => `<div style="margin:4px 0;">• ${h}</div>`).join("");
+        holidaysDiv.style.display = "block";
+      } else {
+        holidaysDiv.style.display = "none";
+      }
+    }
+
+    // Update holidays when date changes
+    document.getElementById("firstDayInput").addEventListener("change", updateHolidaysDisplay);
+
+    // Show initial holidays
+    updateHolidaysDisplay();
+
+    // Allow Enter key to add seat
+    document.getElementById("newSeatInput").addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        addNewSeat();
+      }
+    });
   </script>
 
 </body>
