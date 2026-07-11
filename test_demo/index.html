@@ -1,8 +1,772 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>test page</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chaos & Dynamics - Interactive Visualizations</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      color: white;
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .subtitle {
+      font-size: 1.1em;
+      opacity: 0.9;
+    }
+
+    .visualization {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease;
+    }
+
+    .visualization:hover {
+      transform: translateY(-5px);
+    }
+
+    .viz-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .viz-icon {
+      font-size: 2.5em;
+    }
+
+    .viz-title-group h2 {
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .viz-category {
+      font-size: 0.85em;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .viz-description {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      font-size: 0.95em;
+    }
+
+    .canvas-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #f9f9f9;
+      position: relative;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    .animation-status {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(102, 126, 234, 0.9);
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      background: #667eea;
+      color: white;
+      cursor: pointer;
+      font-size: 0.95em;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #764ba2;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .info-text {
+      text-align: center;
+      color: #999;
+      font-size: 0.85em;
+      margin-top: 10px;
+    }
+
+    footer {
+      text-align: center;
+      color: white;
+      margin-top: 60px;
+      padding: 20px;
+      opacity: 0.8;
+    }
+  </style>
 </head>
 <body>
-This is the test page.
+  <div class="container">
+    <header>
+      <h1>✨ Chaos & Dynamics</h1>
+      <p class="subtitle">Animated Visualizations of Beauty, Order, and Complexity</p>
+    </header>
+
+    <!-- 1. Spirograph -->
+    <div class="visualization">
+      <div class="viz-header">
+        <div class="viz-icon">🌀</div>
+        <div class="viz-title-group">
+          <h2>Spirograph</h2>
+          <div class="viz-category">Beauty & Geometry</div>
+        </div>
+      </div>
+      <p class="viz-description">
+        A spirograph is a geometric curve traced by a point on a circle rolling inside another circle.
+        Watch as beautiful patterns emerge with each animation cycle. Adjust parameters to explore new designs.
+      </p>
+      <div class="canvas-container">
+        <canvas id="spirograph" width="500" height="500"></canvas>
+        <div class="animation-status" id="spiroStatus">Drawing...</div>
+      </div>
+      <div class="controls">
+        <button onclick="randomSpirograph()">Random Pattern</button>
+      </div>
+    </div>
+
+    <!-- 2. Logistic Bifurcation Diagram -->
+    <div class="visualization">
+      <div class="viz-header">
+        <div class="viz-icon">🔀</div>
+        <div class="viz-title-group">
+          <h2>Logistic Bifurcation Diagram</h2>
+          <div class="viz-category">Chaos Theory</div>
+        </div>
+      </div>
+      <p class="viz-description">
+        The logistic map shows the journey from order to chaos. Watch the animated diagram build from left to right,
+        revealing the cascade of bifurcations that lead to chaos.
+      </p>
+      <div class="canvas-container">
+        <canvas id="bifurcation" width="600" height="400"></canvas>
+        <div class="animation-status" id="bifurStatus">Drawing...</div>
+      </div>
+    </div>
+
+    <!-- 3. Lorenz Butterfly Attractor -->
+    <div class="visualization">
+      <div class="viz-header">
+        <div class="viz-icon">🦋</div>
+        <div class="viz-title-group">
+          <h2>Lorenz Butterfly Attractor</h2>
+          <div class="viz-category">The Butterfly Effect</div>
+        </div>
+      </div>
+      <p class="viz-description">
+        The iconic butterfly shape emerges as the Lorenz system evolves. Watch the trajectory trace the strange attractor,
+        demonstrating sensitive dependence on initial conditions.
+      </p>
+      <div class="canvas-container">
+        <canvas id="lorenz" width="600" height="500"></canvas>
+        <div class="animation-status" id="lorenzStatus">Animating...</div>
+      </div>
+    </div>
+
+    <!-- 4. Mandelbrot Set Zoom -->
+    <div class="visualization">
+      <div class="viz-header">
+        <div class="viz-icon">♾️</div>
+        <div class="viz-title-group">
+          <h2>Mandelbrot Set Zoom</h2>
+          <div class="viz-category">Infinite Complexity</div>
+        </div>
+      </div>
+      <p class="viz-description">
+        Zoom infinitely into the fractal boundary. Each loop zooms deeper, revealing self-similar patterns
+        at every scale—a mathematical infinity rendered in pixels.
+      </p>
+      <div class="canvas-container">
+        <canvas id="mandelbrot" width="500" height="500"></canvas>
+        <div class="animation-status" id="mandelbrotStatus">Rendering...</div>
+      </div>
+    </div>
+
+    <!-- 5. LLM Attention Mechanism -->
+    <div class="visualization">
+      <div class="viz-header">
+        <div class="viz-icon">🧠</div>
+        <div class="viz-title-group">
+          <h2>LLM Attention Mechanism</h2>
+          <div class="viz-category">Modern AI</div>
+        </div>
+      </div>
+      <p class="viz-description">
+        Watch as a Large Language Model generates text word by word. The top line shows the sentence being built,
+        while the heatmap below reveals how each new word attends to all previous words. The attention mechanism
+        is the key innovation that powers modern AI language models.
+      </p>
+      <div class="canvas-container">
+        <canvas id="llm" width="700" height="450"></canvas>
+        <div class="animation-status" id="llmStatus">Generating...</div>
+      </div>
+      <p class="info-text">Top: Generated sentence | Bottom: Attention weights (how current word attends to previous words)</p>
+    </div>
+
+    <footer>
+      <p>✨ Exploring the beauty of mathematics, chaos, and artificial intelligence ✨</p>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.6.0"></script>
+  <script>
+    // ===== WORD EMBEDDING PREDICTOR =====
+    let predictor = null;
+
+    async function initPredictor() {
+      try {
+        const { pipeline } = await import('https://cdn.jsdelivr.net/npm/@xenova/transformers@2.6.0');
+        predictor = await pipeline('fill-mask', 'Xenova/distilbert-base-uncased');
+        console.log('Predictor initialized');
+      } catch (e) {
+        console.log('Using fallback predictor (embedding not loaded)');
+        predictor = 'fallback';
+      }
+    }
+
+    async function getPredictionsFromEmbedding(displayedTokens) {
+      if (!predictor) return null;
+      if (predictor === 'fallback') return null;
+
+      try {
+        // Use ONLY the context shown, not the entire sentence
+        const context = displayedTokens.join(' ') + ' [MASK]';
+        const results = await predictor(context, { topk: 5 });
+
+        return results.map(r => ({
+          word: r.token_str.trim(),
+          prob: r.score
+        }));
+      } catch (e) {
+        console.log('Prediction error:', e);
+        return null;
+      }
+    }
+
+    // ===== GLOBAL ANIMATION STATE =====
+    const animationState = {
+      spiro: { animationId: null, t: 0, params: {} },
+      bifur: { animationId: null, px: 0 },
+      lorenz: { animationId: null, points: [], epoch: 0 },
+      mandel: { animationId: null, zoom: 0 },
+      llm: { animationId: null, step: 0, attention: null }
+    };
+
+    // ===== 1. SPIROGRAPH ANIMATION =====
+    function animateSpirograph() {
+      const canvas = document.getElementById('spirograph');
+      const ctx = canvas.getContext('2d');
+      const state = animationState.spiro;
+
+      const R = state.params.R || 100;
+      const r = state.params.r || 50;
+      const d = state.params.d || 100;
+      const maxT = 2 * Math.PI * (R / r);
+      const speed = 0.5; // 10x faster
+
+      // Clear and redraw background
+      ctx.fillStyle = '#f9f9f9';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = '#667eea';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      const scale = 1.5;
+
+      for (let t = 0; t <= state.t && t <= maxT; t += 0.001) {
+        const x = (R - r) * Math.cos(t) + d * Math.cos((R - r) / r * t);
+        const y = (R - r) * Math.sin(t) - d * Math.sin((R - r) / r * t);
+        const px = cx + x * scale;
+        const py = cy + y * scale;
+
+        if (t === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+
+      state.t += speed;
+
+      if (state.t >= maxT) {
+        state.t = 0;
+        document.getElementById('spiroStatus').textContent = 'Restarting...';
+      }
+
+      state.animationId = requestAnimationFrame(animateSpirograph);
+    }
+
+    function randomSpirograph() {
+      animationState.spiro.params.R = Math.random() * 150 + 50;
+      animationState.spiro.params.r = Math.random() * 80 + 10;
+      animationState.spiro.params.d = Math.random() * 150 + 20;
+      animationState.spiro.t = 0;
+    }
+
+    // ===== 2. BIFURCATION ANIMATION =====
+    function animateBifurcation() {
+      const canvas = document.getElementById('bifurcation');
+      const ctx = canvas.getContext('2d');
+      const state = animationState.bifur;
+
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const rMin = 2.5, rMax = 4;
+      const iterations = 500;
+      const lastPoints = 50;
+      const pixelsPerFrame = 20;
+      const margin = 50;
+      const plotWidth = canvas.width - margin * 2;
+      const plotHeight = canvas.height - margin * 2;
+
+      // Draw axes
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(margin, canvas.height - margin);
+      ctx.lineTo(canvas.width - margin, canvas.height - margin); // X-axis
+      ctx.moveTo(margin, margin);
+      ctx.lineTo(margin, canvas.height - margin); // Y-axis
+      ctx.stroke();
+
+      // Draw axis labels
+      ctx.fillStyle = '#333';
+      ctx.font = '12px Arial';
+      ctx.textAlign = 'center';
+
+      // X-axis label
+      ctx.fillText('r (parameter)', canvas.width / 2, canvas.height - 10);
+
+      // Y-axis label
+      ctx.save();
+      ctx.translate(15, canvas.height / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText('Population (x)', 0, 0);
+      ctx.restore();
+
+      // Draw grid and values on X-axis
+      ctx.strokeStyle = '#eee';
+      ctx.lineWidth = 1;
+      ctx.fillStyle = '#666';
+      ctx.font = '10px Arial';
+      for (let i = 0; i <= 4; i++) {
+        const r = rMin + (rMax - rMin) * (i / 4);
+        const x = margin + (plotWidth * i / 4);
+        ctx.beginPath();
+        ctx.moveTo(x, canvas.height - margin);
+        ctx.lineTo(x, margin);
+        ctx.stroke();
+        ctx.textAlign = 'center';
+        ctx.fillText(r.toFixed(2), x, canvas.height - margin + 15);
+      }
+
+      // Draw grid and values on Y-axis
+      for (let i = 0; i <= 5; i++) {
+        const y_val = i / 5;
+        const y = canvas.height - margin - (plotHeight * i / 5);
+        ctx.beginPath();
+        ctx.moveTo(margin, y);
+        ctx.lineTo(canvas.width - margin, y);
+        ctx.stroke();
+        ctx.textAlign = 'right';
+        ctx.fillText(y_val.toFixed(1), margin - 10, y + 4);
+      }
+
+      // Draw bifurcation points
+      ctx.fillStyle = '#333';
+      for (let px = 0; px < Math.min(state.px + pixelsPerFrame, plotWidth); px++) {
+        const r = rMin + (rMax - rMin) * (px / plotWidth);
+        let x = 0.5;
+
+        for (let i = 0; i < iterations; i++) {
+          x = r * x * (1 - x);
+        }
+
+        for (let i = 0; i < lastPoints; i++) {
+          x = r * x * (1 - x);
+          const py = canvas.height - margin - (x * plotHeight);
+          const px_screen = margin + px;
+          ctx.fillRect(px_screen, py, 1, 1);
+        }
+      }
+
+      state.px = Math.min(state.px + pixelsPerFrame, plotWidth);
+
+      if (state.px >= plotWidth) {
+        state.px = 0;
+        document.getElementById('bifurStatus').textContent = 'Restarting...';
+      }
+
+      state.animationId = requestAnimationFrame(animateBifurcation);
+    }
+
+    // ===== 3. LORENZ ANIMATION =====
+    const dt = 0.01;
+    const sigma = 10, rho = 28, beta = 8/3;
+
+    function animateLorenz() {
+      const state = animationState.lorenz;
+
+      if (state.points.length === 0) {
+        let x = 1, y = 1, z = 1;
+        for (let i = 0; i < 5000; i++) { // Reduced points
+          const dx = sigma * (y - x);
+          const dy = x * (rho - z) - y;
+          const dz = x * y - beta * z;
+
+          x += dx * dt;
+          y += dy * dt;
+          z += dz * dt;
+
+          state.points.push({ x, y, z });
+        }
+      }
+
+      const canvas = document.getElementById('lorenz');
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#f9f9f9';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const xMin = Math.min(...state.points.map(p => p.x));
+      const xMax = Math.max(...state.points.map(p => p.x));
+      const yMin = Math.min(...state.points.map(p => p.y));
+      const yMax = Math.max(...state.points.map(p => p.y));
+
+      ctx.strokeStyle = '#764ba2';
+      ctx.lineWidth = 1;
+      ctx.globalAlpha = 0.7;
+
+      const endPoint = Math.min((state.epoch + 1) * 50, state.points.length); // Fixed: +1 to start from frame 1
+
+      for (let i = 0; i < endPoint - 1; i++) {
+        const scale = 1.2;
+        const px1 = (state.points[i].x - xMin) / (xMax - xMin) * canvas.width * scale - canvas.width * (scale - 1) / 2;
+        const py1 = (state.points[i].y - yMin) / (yMax - yMin) * canvas.height * scale - canvas.height * (scale - 1) / 2;
+        const px2 = (state.points[i + 1].x - xMin) / (xMax - xMin) * canvas.width * scale - canvas.width * (scale - 1) / 2;
+        const py2 = (state.points[i + 1].y - yMin) / (yMax - yMin) * canvas.height * scale - canvas.height * (scale - 1) / 2;
+
+        ctx.beginPath();
+        ctx.moveTo(px1, py1);
+        ctx.lineTo(px2, py2);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+
+      state.epoch++;
+
+      if ((state.epoch + 1) * 50 >= state.points.length) {
+        state.epoch = -1;
+        state.points = [];
+        document.getElementById('lorenzStatus').textContent = 'Restarting...';
+      }
+
+      state.animationId = requestAnimationFrame(animateLorenz);
+    }
+
+    // ===== 4. MANDELBROT ANIMATION =====
+    function animateMandelbrot() {
+      const canvas = document.getElementById('mandelbrot');
+      const ctx = canvas.getContext('2d');
+      const state = animationState.mandel;
+      const imageData = ctx.createImageData(canvas.width, canvas.height);
+      const data = imageData.data;
+
+      const zoom = Math.pow(1.2, state.zoom); // Faster zoom
+      const centerX = -0.7469;
+      const centerY = 0.1102;
+      const maxIter = Math.min(80 + state.zoom * 3, 150); // Fewer iterations
+
+      for (let i = 0; i < canvas.width * canvas.height; i++) {
+        const px = i % canvas.width;
+        const py = Math.floor(i / canvas.width);
+
+        const x0 = (px - canvas.width / 2) / (canvas.width / 4 * zoom) + centerX;
+        const y0 = (py - canvas.height / 2) / (canvas.height / 4 * zoom) + centerY;
+
+        let x = 0, y = 0, iter = 0;
+        while (x * x + y * y < 4 && iter < maxIter) {
+          const xtemp = x * x - y * y + x0;
+          y = 2 * x * y + y0;
+          x = xtemp;
+          iter++;
+        }
+
+        const hue = (iter / maxIter) * 360;
+        const rgb = hslToRgb(hue, 100, 50);
+        data[i * 4] = rgb[0];
+        data[i * 4 + 1] = rgb[1];
+        data[i * 4 + 2] = rgb[2];
+        data[i * 4 + 3] = 255;
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+      document.getElementById('mandelbrotStatus').textContent = 'Zoom: ' + zoom.toFixed(2) + 'x';
+
+      state.zoom += 1; // Faster
+
+      if (state.zoom > 30) {
+        state.zoom = 0;
+        document.getElementById('mandelbrotStatus').textContent = 'Restarting...';
+      }
+
+      state.animationId = requestAnimationFrame(animateMandelbrot);
+    }
+
+    function hslToRgb(h, s, l) {
+      h = h / 360;
+      s = s / 100;
+      l = l / 100;
+      let r, g, b;
+
+      if (s === 0) {
+        r = g = b = l;
+      } else {
+        const hue2rgb = (p, q, t) => {
+          if (t < 0) t += 1;
+          if (t > 1) t -= 1;
+          if (t < 1/6) return p + (q - p) * 6 * t;
+          if (t < 1/2) return q;
+          if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+          return p;
+        };
+
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1/3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1/3);
+      }
+
+      return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+    }
+
+    // ===== 5. LLM WORD PREDICTION =====
+    const allSentences = [
+      ['The', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'dog'],
+      ['Paris', 'is', 'the', 'capital', 'of', 'France'],
+      ['Machine', 'learning', 'is', 'transforming', 'the', 'world'],
+      ['Attention', 'is', 'all', 'you', 'need'],
+      ['Artificial', 'intelligence', 'will', 'change', 'humanity', 'forever'],
+      ['Natural', 'language', 'processing', 'enables', 'computers', 'to', 'understand', 'text'],
+      ['Deep', 'neural', 'networks', 'learn', 'patterns', 'from', 'data'],
+      ['Python', 'is', 'popular', 'for', 'machine', 'learning', 'and', 'data', 'science', 'tasks'],
+      ['The', 'transformer', 'architecture', 'revolutionized', 'NLP'],
+      ['Quantum', 'computing', 'promises', 'exponential', 'speedup', 'for', 'certain', 'problems', 'in', 'science']
+    ];
+
+    async function getTopPredictions(currentTokens, nextWord) {
+      // Try using real embedding-based predictions first
+      if (predictor && predictor !== 'fallback') {
+        try {
+          const embeddingPredictions = await getPredictionsFromEmbedding(currentTokens);
+          if (embeddingPredictions && embeddingPredictions.length > 0) {
+            return embeddingPredictions.slice(0, 5);
+          }
+        } catch (e) {
+          console.log('Embedding prediction failed, using fallback');
+        }
+      }
+
+      // Fallback: realistic probability ranges
+      const candidates = [
+        { word: nextWord, prob: 0.75 + Math.random() * 0.15 },
+        { word: Math.random() > 0.5 ? 'the' : 'a', prob: 0.35 + Math.random() * 0.25 },
+        { word: Math.random() > 0.5 ? 'and' : 'or', prob: 0.28 + Math.random() * 0.20 },
+        { word: Math.random() > 0.5 ? 'is' : 'was', prob: 0.22 + Math.random() * 0.18 },
+        { word: Math.random() > 0.5 ? 'to' : 'for', prob: 0.18 + Math.random() * 0.15 }
+      ];
+      candidates.sort((a, b) => b.prob - a.prob);
+      return candidates.slice(0, 5);
+    }
+
+    function animateLLM() {
+      const state = animationState.llm;
+      const canvas = document.getElementById('llm');
+      const ctx = canvas.getContext('2d');
+
+      // Select current sentence (1 word per 80 frames)
+      const framesPerWord = 80;
+      const wordIndex = Math.floor(state.step / framesPerWord);
+      const sentenceIndex = Math.floor(wordIndex / 20) % allSentences.length;
+      const currentTokens = allSentences[sentenceIndex];
+      const tokenIndex = wordIndex % (currentTokens.length + 2);
+      const displayedTokens = currentTokens.slice(0, Math.min(tokenIndex, currentTokens.length));
+
+      // Simulate attention weights (simulate which tokens matter most)
+      const attentionWeights = displayedTokens.map((_, idx) => {
+        // Give more attention to recent tokens, less to older ones
+        const recency = (idx + 1) / Math.max(1, displayedTokens.length);
+        return 0.3 + recency * 0.7 + Math.random() * 0.1;
+      });
+
+      // Draw background
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const padding = 20;
+      const cellSize = 40;
+
+      // === TITLE ===
+      ctx.fillStyle = '#667eea';
+      ctx.font = 'bold 16px Arial';
+      ctx.textAlign = 'left';
+      ctx.fillText('Attention Visualization', padding, 30);
+
+      ctx.fillStyle = '#999';
+      ctx.font = '12px Arial';
+      ctx.fillText('Color intensity shows which context words influence the next prediction', padding, 48);
+
+      // === ATTENTION HEATMAP ===
+      const heatmapY = 65;
+      const heatmapX = padding;
+
+      // Draw heatmap grid
+      displayedTokens.forEach((token, idx) => {
+        const x = heatmapX + idx * cellSize;
+        const attention = attentionWeights[idx];
+
+        // Color: darker = more attention
+        const hue = 240 - attention * 120; // Blue to purple gradient
+        const brightness = 0.3 + attention * 0.5;
+        const [r, g, b] = hslToRgb(hue / 360, 0.7, brightness);
+        ctx.fillStyle = `rgb(${r},${g},${b})`;
+        ctx.fillRect(x, heatmapY, cellSize - 2, cellSize - 2);
+
+        // Border
+        ctx.strokeStyle = '#ddd';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x, heatmapY, cellSize - 2, cellSize - 2);
+
+        // Token text
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 11px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(token, x + cellSize / 2 - 1, heatmapY + cellSize / 2 - 5);
+
+        // Attention score
+        ctx.fillStyle = '#fff';
+        ctx.font = '9px Arial';
+        ctx.fillText((attention * 100).toFixed(0) + '%', x + cellSize / 2 - 1, heatmapY + cellSize / 2 + 10);
+      });
+
+      // === NEXT WORD PREDICTION ===
+      const predictionY = heatmapY + cellSize + 30;
+      ctx.fillStyle = '#333';
+      ctx.font = 'bold 13px Arial';
+      ctx.textAlign = 'left';
+      ctx.fillText('Predicted Next Word:', padding, predictionY);
+
+      if (tokenIndex < currentTokens.length) {
+        const nextWord = currentTokens[tokenIndex];
+        const pred_prob = 0.65 + Math.random() * 0.25;
+
+        // Prediction box
+        ctx.fillStyle = '#667eea';
+        ctx.fillRect(padding, predictionY + 15, 200, 40);
+
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 18px Arial';
+        ctx.textAlign = 'left';
+        ctx.fillText(nextWord, padding + 15, predictionY + 45);
+
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 12px Arial';
+        ctx.textAlign = 'right';
+        ctx.fillText(Math.round(pred_prob * 100) + '%', padding + 185, predictionY + 32);
+      } else {
+        ctx.fillStyle = '#999';
+        ctx.font = '13px Arial';
+        ctx.fillText('[End of sentence]', padding, predictionY + 20);
+      }
+
+      // === STATUS ===
+      const maxWords = currentTokens.length;
+      if (tokenIndex >= maxWords) {
+        document.getElementById('llmStatus').textContent = '✓ ' + currentTokens.join(' ');
+      } else {
+        document.getElementById('llmStatus').textContent = 'Predicting word ' + (tokenIndex + 1) + '/' + maxWords + ' • Attention shows token relevance';
+      }
+
+      state.step++;
+      state.animationId = requestAnimationFrame(animateLLM);
+    }
+
+    // Initialize all animations
+    window.addEventListener('load', async () => {
+      // Initialize word embedding predictor
+      await initPredictor();
+
+      animationState.spiro.params = { R: 120, r: 30, d: 80 };
+      animateSpirograph();
+      animateBifurcation();
+      animateLorenz();
+      animateMandelbrot();
+      animateLLM();
+    });
+
+    window.addEventListener('beforeunload', () => {
+      Object.values(animationState).forEach(state => {
+        if (state.animationId) cancelAnimationFrame(state.animationId);
+      });
+    });
+  </script>
 </body>
 </html>
