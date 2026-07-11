@@ -308,8 +308,9 @@
     <h3>1. Schedule and Assignment Rules</h3>
 
     <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
-      <button class="secondary" onclick="addPerson()">Add</button>
-      <div class="note">Click Add to append a new person (editable name and defaults).</div>
+      <button class="secondary" onclick="addPerson()">Add a person</button>
+      <button class="secondary" onclick="resetAll()" style="background:#e8f5e9; color:#2e7d32;">Reset All</button>
+      <div class="note">Click "Add a person" to append a new person (editable name and defaults). Click "Reset All" to clear work day selections.</div>
     </div>
 
     <table id="scheduleTable">
@@ -842,6 +843,29 @@
           }
         }
       }, 0);
+    }
+
+    function resetAll() {
+      if (!confirm("Are you sure you want to reset all work day selections? This will clear the Mon-Fri checkboxes for both weeks but keep all people data intact.")) {
+        return;
+      }
+
+      // Reset only the work day selections (keep people data intact)
+      peopleData.forEach(person => {
+        person.a = [0, 0, 0, 0, 0];
+        person.b = [0, 0, 0, 0, 0];
+      });
+
+      // Rebuild table with cleared selections
+      buildTable();
+
+      // Clear results
+      document.getElementById("capacity").innerHTML = "";
+      document.getElementById("resultA").innerHTML = "";
+      document.getElementById("resultB").innerHTML = "";
+      document.getElementById("message").textContent = "";
+
+      showMessage("All work day selections have been reset. People list remains intact.", false);
     }
 
     function escapeHtml(value) {
