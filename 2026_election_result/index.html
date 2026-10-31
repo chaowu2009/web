@@ -91,6 +91,14 @@ th:nth-child(5),th:nth-child(6),th:nth-child(7){background:#faeded}
 .split-badge{display:inline-block;font-size:10.5px;font-weight:750;letter-spacing:.3px;padding:4px 9px;border-radius:5px}
 .split-badge.is-count{color:#32615e;background:#e8f3f1}
 .split-badge.is-pct{color:#2f4f8f;background:#eaf0fb}
+.party-rate-table{table-layout:fixed;font-size:12px}
+.party-rate-table th:first-child,.party-rate-table td:first-child{text-align:left}
+.party-rate-table th:not(:first-child),.party-rate-table td:not(:first-child){text-align:right}
+.vr-panel .party-rate-table th.dem,.vr-panel .party-rate-table td.dem{color:#1e5aa8}
+.vr-panel .party-rate-table th.rep,.vr-panel .party-rate-table td.rep{color:#8b1e2d}
+.vr-panel .party-rate-table th.dem{background:#eaf2ff}
+.vr-panel .party-rate-table th.rep{background:#faeded}
+@media(max-width:650px){.party-rate-table{font-size:11px}.vr-panel .party-rate-table th,.vr-panel .party-rate-table td{padding:9px 4px}}
 @media(max-width:650px){.split2{padding:2px 5px 14px}}
 </style></head><body>
 <header><div class="eyebrow">Maryland · Legislative District 9A</div><h1>House &amp; Senate results</h1><p>Primary election results by precinct · Howard &amp; Montgomery counties</p></header>
@@ -140,6 +148,13 @@ th:nth-child(5),th:nth-child(6),th:nth-child(7){background:#faeded}
 <tr><td>General election total</td><td>33,684</td><td class="dem">14,693</td><td class="rep">11,159</td><td>7,822</td><td class="pending" colspan="4">Pending &mdash; Nov 3, 2026</td></tr>
 </tbody></table>
 </div></div>
+<section class="county-section" aria-labelledby="pct-party-heading"><div class="county-heading"><h3 id="pct-party-heading">Percentage by party and category</h3><span class="hint">Share of registered voters</span></div>
+<div class="split2">
+<div class="split-col"><div class="split-label"><span class="split-badge is-pct">2022</span></div><div class="scroll"><table class="party-rate-table"><thead><tr><th scope="col">Category</th><th scope="col">Total</th><th scope="col" class="dem">Dem</th><th scope="col" class="rep">Rep</th><th scope="col">UNA</th></tr></thead><tbody><tr><td>Absentee requested</td><td>13.2%</td><td class="dem">18.5%</td><td class="rep">8.0%</td><td>11.2%</td></tr><tr><td>Absentee returned</td><td>7.2%</td><td class="dem">10.6%</td><td class="rep">4.3%</td><td>5.5%</td></tr><tr><td>Early voted</td><td>9.1%</td><td class="dem">11.1%</td><td class="rep">8.7%</td><td>6.4%</td></tr><tr><td>Early + absentee</td><td>16.3%</td><td class="dem">21.7%</td><td class="rep">13.0%</td><td>11.9%</td></tr><tr><td>Election turnout</td><td>56.0%</td><td class="dem">59.3%</td><td class="rep">57.8%</td><td>48.9%</td></tr></tbody></table></div></div>
+<div class="split-col"><div class="split-label"><span class="split-badge is-pct">2026*</span></div><div class="scroll"><table class="party-rate-table"><thead><tr><th scope="col">Category</th><th scope="col">Total</th><th scope="col" class="dem">Dem</th><th scope="col" class="rep">Rep</th><th scope="col">UNA</th></tr></thead><tbody><tr><td>Absentee requested</td><td>16.5%</td><td class="dem">22.8%</td><td class="rep">10.9%</td><td>13.5%</td></tr><tr><td>Absentee returned</td><td>9.1%</td><td class="dem">13.4%</td><td class="rep">5.9%</td><td>6.5%</td></tr><tr><td>Early voted</td><td>16.0%</td><td class="dem">19.2%</td><td class="rep">16.4%</td><td>11.3%</td></tr><tr><td>Early + absentee</td><td>25.0%</td><td class="dem">32.5%</td><td class="rep">22.3%</td><td>17.8%</td></tr><tr><td>Election turnout</td><td class="pending" colspan="4">Pending &mdash; Nov 3</td></tr></tbody></table></div></div>
+</div>
+<p class="notes">Each rate is the category count divided by registered voters in that party (or total registered voters). 2026 values are cumulative through the latest reported dates: absentee requested 10/26, absentee returned 10/30, and early voting 10/29. 2022 election turnout is final; 2026 turnout is pending.</p>
+</section>
 <p class="notes">UNA = unaffiliated/independent. 2022 figures are final totals from that cycle. 2026 figures marked * are cumulative through the latest reported date (absentee requested as of 10/26/2026; absentee returned as of 10/30/2026; early voting as of 10/29/2026) and will continue to rise before Election Day.</p>
 </section>
 
