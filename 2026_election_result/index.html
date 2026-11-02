@@ -58,6 +58,7 @@ th:nth-child(5),th:nth-child(6),th:nth-child(7){background:#faeded}
 .vr-panel th.rep,.vr-panel td.rep{color:#8b1e2d}
 .vr-panel th.dem{background:#eaf2ff}
 .vr-panel th.rep{background:#faeded}
+.cmp-table .yr-split{border-left:2px solid #142c43}
 .vr-panel .turnout-table{width:100%;min-width:0;table-layout:fixed;font-size:14px}
 .vr-panel .turnout-table th:first-child{width:18%}
 .vr-panel .turnout-table th:nth-child(2),.vr-panel .turnout-table th:nth-child(3){width:28%}
@@ -139,13 +140,13 @@ th:nth-child(5),th:nth-child(6),th:nth-child(7){background:#faeded}
 
 <section class="panel" aria-labelledby="cmp-heading" style="margin-top:20px"><div class="toolbar"><div><h2 id="cmp-heading">2022 vs 2026 comparison</h2><p class="hint">Same district &middot; general election cycles</p></div></div>
 <div class="vr-panel"><div class="scroll">
-<table><thead><tr><th scope="col" rowspan="2">Category</th><th scope="colgroup" colspan="4">2022</th><th scope="colgroup" colspan="4">2026</th></tr><tr><th scope="col">Total</th><th scope="col" class="dem">Dem</th><th scope="col" class="rep">Rep</th><th scope="col">UNA</th><th scope="col">Total</th><th scope="col" class="dem">Dem</th><th scope="col" class="rep">Rep</th><th scope="col">UNA</th></tr></thead>
+<table class="cmp-table"><thead><tr><th scope="col" rowspan="2">Category</th><th scope="colgroup" colspan="4">2022</th><th scope="colgroup" colspan="4" class="yr-split">2026</th></tr><tr><th scope="col">Total</th><th scope="col" class="dem">Dem</th><th scope="col" class="rep">Rep</th><th scope="col">UNA</th><th scope="col" class="yr-split">Total</th><th scope="col" class="dem">Dem</th><th scope="col" class="rep">Rep</th><th scope="col">UNA</th></tr></thead>
 <tbody>
-<tr><td>Registered voters</td><td>60,100</td><td class="dem">24,796</td><td class="rep">19,296</td><td>16,008</td><td>63,723</td><td class="dem">25,874</td><td class="rep">18,165</td><td>19,684</td></tr>
-<tr><td>Absentee requested</td><td>7,919</td><td class="dem">4,596</td><td class="rep">1,535</td><td>1,788</td><td>10,529*</td><td class="dem">5,889*</td><td class="rep">1,984*</td><td>2,656*</td></tr>
-<tr><td>Absentee returned</td><td>4,346</td><td class="dem">2,633</td><td class="rep">834</td><td>879</td><td>6,410*</td><td class="dem">3,815*</td><td class="rep">1,177*</td><td>1,418*</td></tr>
-<tr><td>In-person early voted</td><td>5,452</td><td class="dem">2,754</td><td class="rep">1,680</td><td>1,018</td><td>10,165*</td><td class="dem">4,963*</td><td class="rep">2,978*</td><td>2,224*</td></tr>
-<tr><td>General election total</td><td>33,684</td><td class="dem">14,693</td><td class="rep">11,159</td><td>7,822</td><td class="pending" colspan="4">Pending &mdash; Nov 3, 2026</td></tr>
+<tr><td>Registered voters</td><td>60,100</td><td class="dem">24,796</td><td class="rep">19,296</td><td>16,008</td><td class="yr-split">63,723</td><td class="dem">25,874</td><td class="rep">18,165</td><td>19,684</td></tr>
+<tr><td>Absentee requested</td><td>7,919</td><td class="dem">4,596</td><td class="rep">1,535</td><td>1,788</td><td class="yr-split">10,529*</td><td class="dem">5,889*</td><td class="rep">1,984*</td><td>2,656*</td></tr>
+<tr><td>Absentee returned</td><td>4,346</td><td class="dem">2,633</td><td class="rep">834</td><td>879</td><td class="yr-split">6,410*</td><td class="dem">3,815*</td><td class="rep">1,177*</td><td>1,418*</td></tr>
+<tr><td>In-person early voted</td><td>5,452</td><td class="dem">2,754</td><td class="rep">1,680</td><td>1,018</td><td class="yr-split">10,165*</td><td class="dem">4,963*</td><td class="rep">2,978*</td><td>2,224*</td></tr>
+<tr><td>General election total</td><td>33,684</td><td class="dem">14,693</td><td class="rep">11,159</td><td>7,822</td><td class="pending yr-split" colspan="4">Pending &mdash; Nov 3, 2026</td></tr>
 </tbody></table>
 </div></div>
 <section class="county-section" aria-labelledby="pct-party-heading"><div class="county-heading"><h3 id="pct-party-heading">Percentage by party and category</h3><span class="hint">Share of registered voters</span></div>
