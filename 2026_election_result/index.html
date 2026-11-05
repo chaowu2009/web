@@ -59,6 +59,15 @@ th:nth-child(5),th:nth-child(6),th:nth-child(7){background:#faeded}
 .vr-panel th.dem{background:#eaf2ff}
 .vr-panel th.rep{background:#faeded}
 .cmp-table .yr-split{border-left:2px solid #142c43}
+
+/* Certified general-election result table. */
+.result-panel{border-top:4px solid #a07d1f !important}
+.result-eyebrow{color:#a07d1f;font-size:12px;font-weight:750;letter-spacing:1.5px;text-transform:uppercase;margin:0 0 4px}
+.vr-panel .result-table td:nth-child(2){color:#64748b;font-size:12px}
+.vr-panel .result-table tr.dem td:first-child{color:#1e5aa8;font-weight:750}
+.vr-panel .result-table tr.rep td:first-child{color:#8b1e2d;font-weight:750}
+.vr-panel .result-table tr.una td:first-child{color:#176a60;font-weight:750}
+.vr-panel .result-table tfoot td{background:#f1f5f8;font-weight:800;border-top:2px solid #142c43}
 .vr-panel .turnout-table{width:100%;min-width:0;table-layout:fixed;font-size:14px}
 .vr-panel .turnout-table th:first-child{width:18%}
 .vr-panel .turnout-table th:nth-child(2),.vr-panel .turnout-table th:nth-child(3){width:28%}
@@ -104,6 +113,23 @@ th:nth-child(5),th:nth-child(6),th:nth-child(7){background:#faeded}
 </style></head><body>
 <header><div class="eyebrow">Maryland · Legislative District 9A</div><h1>House &amp; Senate results</h1><p>Primary election results by precinct · Howard &amp; Montgomery counties</p></header>
 <main>
+<section class="panel result-panel" aria-labelledby="genresult-heading" style="margin-bottom:20px"><div class="toolbar"><div><p class="result-eyebrow">Final result &middot; Nov 3, 2026</p><h2 id="genresult-heading">District 9A &middot; House of Delegates (General)</h2><p class="hint">Vote for up to 2 &middot; County Break Down &middot; 18 of 18 election day precincts reported</p></div></div>
+<div class="vr-panel"><div class="scroll">
+<table class="result-table"><thead><tr><th scope="col">Name</th><th scope="col">Party</th><th scope="col">Early Voting</th><th scope="col">Election Day</th><th scope="col">Mail-In Ballot</th><th scope="col">Provisional</th><th scope="col">Total</th><th scope="col">Percentage</th></tr></thead>
+<tbody>
+<tr class="dem"><td>Chao Wu</td><td>Democratic</td><td>6,010</td><td>8,911</td><td>2,353</td><td>NR</td><td>17,274</td><td>29.87%</td></tr>
+<tr class="dem"><td>Natalie Ziegler</td><td>Democratic</td><td>6,156</td><td>8,447</td><td>2,364</td><td>NR</td><td>16,967</td><td>29.34%</td></tr>
+<tr class="rep"><td>Fitzgerald Mofor</td><td>Republican</td><td>3,322</td><td>6,980</td><td>625</td><td>NR</td><td>10,927</td><td>18.90%</td></tr>
+<tr class="rep"><td>Spencer Rhoda</td><td>Republican</td><td>3,261</td><td>6,747</td><td>594</td><td>NR</td><td>10,602</td><td>18.33%</td></tr>
+<tr class="una"><td>Saif Rehman</td><td>Unaffiliated</td><td>590</td><td>1,250</td><td>150</td><td>NR</td><td>1,990</td><td>3.44%</td></tr>
+<tr><td>Other Write-Ins</td><td></td><td>15</td><td>47</td><td>2</td><td>NR</td><td>64</td><td>0.11%</td></tr>
+</tbody>
+<tfoot><tr><td>Totals</td><td></td><td>19,354</td><td>32,382</td><td>6,088</td><td>NR</td><td>57,824</td><td>100.00%</td></tr></tfoot>
+</table>
+</div></div>
+<p class="notes">Chao Wu and Natalie Ziegler (both Democratic) win the two House of Delegates seats. Source: county board of elections, District 9A general election results.</p>
+</section>
+
 <section class="panel" aria-labelledby="vr-heading"><div class="toolbar"><div><h2 id="vr-heading">2026 general election &middot; absentee &amp; early voting</h2><p class="hint">63,723 registered voters &middot; updated through 11/3/2026</p></div></div>
 <div class="stat-row">
 <div class="stat-card"><div class="stat-label">Registered voters</div><div class="stat-value">63,723</div><div class="stat-sub">2026 general election</div></div>
