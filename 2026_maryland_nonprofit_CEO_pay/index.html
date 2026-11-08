@@ -29,6 +29,19 @@
     }
     h1 { margin: 12px 0; font-size: clamp(30px, 5vw, 46px); letter-spacing: -1.5px; }
     header p { max-width: 760px; margin: 0; color: #c3d0dd; line-height: 1.65; }
+    .home-link {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 9px 13px;
+      color: #fff;
+      border: 1px solid #6b8298;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 650;
+      text-decoration: none;
+    }
+    .home-link:hover { background: #203d57; }
+    .home-link:focus-visible { outline: 3px solid #85ded2; outline-offset: 3px; }
     main { max-width: 1228px; margin: auto; padding: 28px 24px 40px; }
     .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 22px; }
     .stat, .panel { background: #fff; border: 1px solid #dce4ed; border-radius: 12px; }
@@ -82,6 +95,7 @@
     footer { display: flex; justify-content: space-between; gap: 12px; margin-top: 26px; padding-top: 16px; color: #7a8a9b; border-top: 1px solid #dce4ed; font-size: 11px; }
     @media (max-width: 700px) {
       header { padding: 30px 18px; }
+      .home-link { margin-top: 15px; }
       main { padding: 18px 10px 30px; }
       .stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
       .stat { padding: 14px 11px; }
@@ -121,6 +135,7 @@
     <div class="eyebrow">Maryland nonprofits · IRS Form 990</div>
     <h1>What do nonprofit CEOs earn?</h1>
     <p>Explore reported CEO and executive director compensation alongside organization revenue and government grants. The directory opens with every organization reporting more than $500,000 in total compensation; records without reported pay can be viewed separately, ordered by revenue.</p>
+    <a class="home-link" href="../">← Home</a>
   </header>
   <main>
     <section class="stats" aria-label="Dataset summary">
