@@ -4,6 +4,15 @@ Welcome to my web projects repository! This site hosts multiple projects organiz
 
 ## Projects
 
+### [Maryland Nonprofit CEO Pay](./2026_maryland_nonprofit_CEO_pay/)
+An interactive view of Maryland nonprofit CEO compensation, revenue, government grants, and Form 990 tax periods.
+- **URL:** https://chaowu2009.github.io/web/2026_maryland_nonprofit_CEO_pay/
+- **Description:** Ranks organizations by reported CEO total compensation and lists records without reported pay by revenue
+
+### [2026 District 9A Election Results](./2026_election_result/)
+A precinct-level election results project.
+- **URL:** https://chaowu2009.github.io/web/2026_election_result/
+
 ### [Seat Assignment](./seat_assignment/)
 A seat assignment application.
 - **URL:** https://chaowu2009.github.io/web/seat_assignment/
@@ -28,6 +37,10 @@ A test demonstration project.
 web/
 ├── index.html          (Landing page - visible at /web/)
 ├── README.md           (This file)
+├── 2026_maryland_nonprofit_CEO_pay/
+│   └── index.html      (Includes its data inline for static hosting)
+├── 2026_election_result/
+│   └── index.html
 ├── seat_assignment/
 │   └── index.html
 └── test_demo/
@@ -37,5 +50,7 @@ web/
 ## Accessing Projects
 
 - Landing page: https://chaowu2009.github.io/web/
+- Maryland Nonprofit CEO Pay: https://chaowu2009.github.io/web/2026_maryland_nonprofit_CEO_pay/
+- District 9A Election Results: https://chaowu2009.github.io/web/2026_election_result/
 - Seat Assignment: https://chaowu2009.github.io/web/seat_assignment/
 - Test Demo: https://chaowu2009.github.io/web/test_demo/
